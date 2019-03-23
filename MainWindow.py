@@ -1,4 +1,5 @@
 import json
+from functools import partial
 from PyQt5.QtWidgets import QWidget, QTextEdit, QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QFormLayout, QPushButton
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, Qt, QSettings, QSize
@@ -126,7 +127,7 @@ class MainWindow(QWidget):
 			for name in results:
 				if name != "":
 					btn = QPushButton(name)
-					btn.clicked.connect(lambda: self.loadFromUsername(name))
+					btn.clicked.connect(partial(self.loadFromUsername, name))
 					layout.addWidget(btn)			
 			
 			self.searchResults.show()		
