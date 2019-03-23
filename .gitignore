@@ -1,0 +1,6 @@
+/src
+/target
+/venv
+/__pycache__
+matches.json
+notes.json
