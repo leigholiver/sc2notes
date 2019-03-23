@@ -1,3 +1,4 @@
 PyQt5==5.9.2
-fbs PyInstaller==3.4
+fbs==0.7.2
+PyInstaller==3.4
 qdarkstyle==2.6.5
