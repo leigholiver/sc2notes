@@ -4,6 +4,7 @@ from Observer import Observer
 
 class UIListener(Observer):
 	loadText = pyqtSignal(str)
+	updateRecents = pyqtSignal()
 
 	def notify(self, data):
 		if len(data['players']) == 2:
@@ -51,12 +52,13 @@ class UIListener(Observer):
 					if games == 0: 
 						winrate = "0"
 					else:
-				 		winrate = str(int(wins/games))
+				 		winrate = str(int((wins/games) * 100))
 
 					self.ui.gameLabel.setText("In game against " + op['name'] + " (" + op['race'] + ") - " + 
 						str(wins) + ":" + str(games - wins) + " (" + winrate + "%)")
 				elif data['event'] == 'exit':
 					self.ui.gameLabel.setText(result + " against " + op['name'] + " (" + op['race'] + ")")
+					self.updateRecents.emit();
 			else:
 				self.ui.gameLabel.setText(" ")	
 

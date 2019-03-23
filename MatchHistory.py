@@ -3,6 +3,7 @@ from Observer import Observer
 
 class MatchHistory(Observer):
 	matches = {}
+	recents = []
 
 	def notify(self, data):
 		if data['event'] == 'exit' and len(data['players']) == 2:
@@ -39,6 +40,9 @@ class MatchHistory(Observer):
 
 				with open('matches.json', 'w+') as outfile:  
 					json.dump(self.matches, outfile)
+
+				self.recents.append(m)
+				print(self.recents)
 
 	def __init__(self):
 		Observer.__init__(self)

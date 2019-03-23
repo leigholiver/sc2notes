@@ -24,6 +24,7 @@ class MainWindow(QWidget):
 		self.mh = MatchHistory()
 		self.ui = UIListener(self, self.mh)
 		self.ui.loadText.connect(self.updateText)
+		self.ui.updateRecents.connect(self.loadRecents)
 		self.hl.attach(self.mh)
 		self.hl.attach(self.ui)
 		self.hl.start()
@@ -74,6 +75,7 @@ class MainWindow(QWidget):
 
 		self.searchResults = QWidget()
 		tmplayout = QVBoxLayout()
+		tmplayout.setAlignment(Qt.AlignTop)
 		tmplayout.setContentsMargins(0, 0, 0, 0)
 		self.searchResults.setLayout(tmplayout)
 
@@ -84,6 +86,7 @@ class MainWindow(QWidget):
 		self.scroll.setWidget(self.searchResults)
 
 		scroll_layout = QVBoxLayout()
+		scroll_layout.setAlignment(Qt.AlignTop)
 		scroll_layout.addWidget(self.scroll)
 		scroll_layout.setContentsMargins(0, 0, 0, 0)
 		col2.addWidget(self.scroll)
@@ -93,9 +96,50 @@ class MainWindow(QWidget):
 		col2.addWidget(self.gameLabel)
 
 		col2.addWidget(QLabel("Match History"))
+		
 
 		self.historyLabel = QLabel()
-		col2.addWidget(self.historyLabel)
+		widget = QWidget()
+		tmplayout = QVBoxLayout()
+		tmplayout.setAlignment(Qt.AlignTop)
+		tmplayout.setContentsMargins(0, 0, 0, 0)
+		tmplayout.addWidget(self.historyLabel)
+		widget.setLayout(tmplayout)
+
+		self.historyLabelScroll = QScrollArea()
+		self.historyLabelScroll.setAlignment(Qt.AlignTop)
+		self.historyLabelScroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+		self.historyLabelScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.historyLabelScroll.setWidgetResizable(True)
+		self.historyLabelScroll.setWidget(widget)
+
+		scroll_layout = QVBoxLayout()
+		scroll_layout.setAlignment(Qt.AlignTop)
+		scroll_layout.addWidget(self.historyLabelScroll)
+		scroll_layout.setContentsMargins(0, 0, 0, 0)
+		col2.addWidget(self.historyLabelScroll)
+
+		self.recentMatchesText = QLabel("Recent Matches")
+		col2.addWidget(self.recentMatchesText)
+
+		self.recentMatches = QWidget()
+		tmplayout = QVBoxLayout()
+		tmplayout.setAlignment(Qt.AlignTop)
+		tmplayout.setContentsMargins(0, 0, 0, 0)
+		self.recentMatches.setLayout(tmplayout)
+
+		self.recentMatchesScroll = QScrollArea()
+		self.recentMatchesScroll.setAlignment(Qt.AlignTop)
+		self.recentMatchesScroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+		self.recentMatchesScroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.recentMatchesScroll.setWidgetResizable(True)
+		self.recentMatchesScroll.setWidget(self.recentMatches)
+
+		scroll_layout = QVBoxLayout()
+		scroll_layout.setAlignment(Qt.AlignTop)
+		scroll_layout.addWidget(self.recentMatchesScroll)
+		scroll_layout.setContentsMargins(0, 0, 0, 0)
+		col2.addWidget(self.recentMatchesScroll)
 
 		layout.addLayout(col2, 2)
 
@@ -169,9 +213,35 @@ class MainWindow(QWidget):
 			self.historyLabel.setText(out)
 			winrate = "0"
 			if games > 0:
-				winrate = str(int(wins/games))
+				winrate = str(int((wins/games) * 100))
 			self.gameLabel.setText("History against " + username + " - " + 
 						str(wins) + ":" + str(games - wins) + " (" + winrate + "%)")
 			if (username in self.notes) == False:
 				self.noteText.setText("")
 		self.scroll.hide()
+
+	def loadRecents(self):
+		layout = self.recentMatches.layout()
+		index = layout.count()
+		while(index >= 0):
+			if layout.itemAt(index) != None:
+				myWidget = layout.itemAt(index).widget()
+				myWidget.setParent(None)
+			index -=1
+		wins = 0
+		games = 0
+		for i in reversed(range(len(self.mh.recents))):
+			games = len(self.mh.recents)
+			m = self.mh.recents[i]
+			secs = float(m['gametime'])
+			mins = secs / 60
+			secs = secs % 60
+			btn = QPushButton(m['result'] + " - " + m['opponent'] + " - " + m['race'] + " - " + str(int(mins)) + "m" + str(int(secs)) + "s - " + m['date'])
+			btn.clicked.connect(partial(self.loadFromUsername, m['opponent']))
+			layout.addWidget(btn)
+			if m['result'] == 'Victory': wins = wins + 1
+		winrate = "0"
+		if games > 0:
+			winrate = str(int((wins/games) * 100))
+			self.recentMatchesText.setText("Recent Matches - " + 
+					str(wins) + ":" + str(games - wins) + " (" + winrate + "%)")
