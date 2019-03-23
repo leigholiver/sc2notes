@@ -1,6 +1,6 @@
 import json
 from functools import partial
-from PyQt5.QtWidgets import QWidget, QTextEdit, QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QFormLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QTextEdit, QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QFormLayout, QPushButton, QScrollArea
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSlot, Qt, QSettings, QSize
 from webhook import httpListener
@@ -73,9 +73,21 @@ class MainWindow(QWidget):
 		col2.addLayout(searchForm)
 
 		self.searchResults = QWidget()
-		self.searchResults.hide()
-		self.searchResults.setLayout(QVBoxLayout())
-		col2.addWidget(self.searchResults)
+		tmplayout = QVBoxLayout()
+		tmplayout.setContentsMargins(0, 0, 0, 0)
+		self.searchResults.setLayout(tmplayout)
+
+		self.scroll = QScrollArea()
+		self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+		self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		self.scroll.setWidgetResizable(True)
+		self.scroll.setWidget(self.searchResults)
+
+		scroll_layout = QVBoxLayout()
+		scroll_layout.addWidget(self.scroll)
+		scroll_layout.setContentsMargins(0, 0, 0, 0)
+		col2.addWidget(self.scroll)
+		self.scroll.hide()
 
 		self.gameLabel = QLabel("")
 		col2.addWidget(self.gameLabel)
@@ -130,7 +142,7 @@ class MainWindow(QWidget):
 					btn.clicked.connect(partial(self.loadFromUsername, name))
 					layout.addWidget(btn)			
 			
-			self.searchResults.show()		
+			self.scroll.show()		
 		else:
 			self.gameLabel.setText("No results found.");
 
@@ -162,4 +174,4 @@ class MainWindow(QWidget):
 						str(wins) + ":" + str(games - wins) + " (" + winrate + "%)")
 			if (username in self.notes) == False:
 				self.noteText.setText("")
-		self.searchResults.hide()
+		self.scroll.hide()
