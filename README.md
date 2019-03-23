@@ -1,4 +1,5 @@
 # SC2Notes
+### [Download](https://github.com/leigholiver/sc2notes/releases/latest)
 
 Copy the `SC2Switcher URL` into the Webhook tab of the [SC2Switcher obs-studio plugin](https://github.com/leigholiver/OBS-SC2Switcher) or [SC2Switcher Standalone](https://github.com/leigholiver/SC2Switcher-Standalone)
 
