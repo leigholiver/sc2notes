@@ -13,4 +13,5 @@ Your notes and match history are stored in `notes.json` and `matches.json` respe
 
 ##### Build instructions
 `pip install -r requirements.txt`
+
 `pyinstaller main.py --noconsole --name sc2notes`
