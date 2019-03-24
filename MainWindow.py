@@ -1,7 +1,7 @@
 import json
 from functools import partial
-from PyQt5.QtWidgets import QWidget, QTextEdit, QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QFormLayout, QPushButton, QScrollArea
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QWidget, QTextEdit, QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QFormLayout, QPushButton, QScrollArea, QSlider
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtCore import pyqtSlot, Qt, QSettings, QSize
 from webhook import httpListener
 from MatchHistory import MatchHistory
@@ -48,6 +48,17 @@ class MainWindow(QWidget):
 		self.noteText.textChanged.connect(lambda: self.saveNoteText(self.noteText.document().toPlainText()))
 
 		col1.addWidget(self.noteText)
+
+		col1.addWidget(QLabel("Font Size"))
+		self.fontSize = QSlider(Qt.Horizontal)
+		self.fontSize.setMinimum(9)
+		self.fontSize.setMaximum(48)
+		if self.settings.value("fontSize") != None:
+			self.fontSize.setValue(int(self.settings.value("fontSize")))
+			self.setFontSize()
+		self.fontSize.valueChanged.connect(self.setFontSize)
+
+		col1.addWidget(self.fontSize)
 		layout.addLayout(col1, 3)
 
 		col2 = QVBoxLayout()
@@ -245,3 +256,9 @@ class MainWindow(QWidget):
 			winrate = str(int((wins/games) * 100))
 			self.recentMatchesText.setText("Recent Matches - " + 
 					str(wins) + ":" + str(games - wins) + " (" + winrate + "%)")
+
+	def setFontSize(self):
+		font = QFont()
+		font.setPointSize(self.fontSize.value())
+		self.noteText.setFont(font)
+		self.settings.setValue("fontSize", self.fontSize.value())
