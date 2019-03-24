@@ -1,4 +1,4 @@
-import json
+import json, requests
 from functools import partial
 from PyQt5.QtWidgets import QWidget, QTextEdit, QHBoxLayout, QLabel, QVBoxLayout, QLineEdit, QFormLayout, QPushButton, QScrollArea, QSlider
 from PyQt5.QtGui import QIcon, QFont
@@ -65,6 +65,13 @@ class MainWindow(QWidget):
 		col2.setAlignment(Qt.AlignTop)
 
 		col2.addWidget(QLabel("")) # spacer
+
+		# check for updates
+		self.updates = QVBoxLayout()
+		self.updates.setAlignment(Qt.AlignTop)
+		self.updates.setContentsMargins(0, 0, 0, 0)
+		col2.addLayout(self.updates)
+		self.checkForUpdates()
 
 		ipaddrForm = QHBoxLayout()
 		ipaddrLabel = QLabel("SC2Switcher URL:")
@@ -262,3 +269,14 @@ class MainWindow(QWidget):
 		font.setPointSize(self.fontSize.value())
 		self.noteText.setFont(font)
 		self.settings.setValue("fontSize", self.fontSize.value())
+
+	def checkForUpdates(self):
+		r = requests.get('https://api.github.com/repos/leigholiver/sc2notes/releases/latest')
+		response = r.json()
+		if float(response['tag_name']) > 0.3:
+			updateLink = QLabel("<a href=\"" + response['html_url'] + "\">Update Available. Click here to download.</a>")
+			updateLink.setTextFormat(Qt.RichText)
+			updateLink.setTextInteractionFlags(Qt.TextBrowserInteraction)
+			updateLink.setOpenExternalLinks(True)
+			self.updates.addWidget(updateLink)
+			self.updates.addWidget(QLabel(response['body']))
