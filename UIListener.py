@@ -27,10 +27,11 @@ class UIListener(Observer):
 
 			if found and opFound and op != None:
 				if data['event'] == 'enter':
-					self.ui.OPName = op['name']
-					if op['name'] in self.ui.notes:
+					self.ui.OPName = op['name'] + "/" + op['race']
+					if op['name'] + "/" + op['race'] in self.ui.notes:
+						self.loadText.emit(self.ui.notes[op['name'] + "/" + op['race']])
+					elif op['name'] in self.ui.notes:
 						self.loadText.emit(self.ui.notes[op['name']])
-						pass
 					else:
 						self.loadText.emit("")
 

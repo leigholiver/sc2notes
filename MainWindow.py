@@ -273,7 +273,7 @@ class MainWindow(QWidget):
 	def checkForUpdates(self):
 		r = requests.get('https://api.github.com/repos/leigholiver/sc2notes/releases/latest')
 		response = r.json()
-		if float(response['tag_name']) > 0.3:
+		if float(response['tag_name']) > 0.4:
 			updateLink = QLabel("<a href=\"" + response['html_url'] + "\">Update Available. Click here to download.</a>")
 			updateLink.setTextFormat(Qt.RichText)
 			updateLink.setTextInteractionFlags(Qt.TextBrowserInteraction)
