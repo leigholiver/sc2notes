@@ -189,12 +189,12 @@ class MainWindow(QWidget):
 		self.gameLabel.setText("");
 		results = []
 		for name in self.notes.keys():
-			if query in name and name not in results:
+			if query in name.lower() and name.lower() not in results:
 				results.append(name)
-			if query in self.notes[name] and name not in results:
+			if query in self.notes[name].lower() and name.lower() not in results:
 				results.append(name)
 		for name in self.mh.matches.keys():
-			if query in name and name not in results:
+			if query in name.lower() and name.lower() not in results:
 				results.append(name)
 		
 		if len(results) > 0:
