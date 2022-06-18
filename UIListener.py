@@ -1,4 +1,3 @@
-import json
 from PyQt5.QtCore import pyqtSignal
 from Observer import Observer
 
