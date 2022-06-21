@@ -7,8 +7,9 @@ from PyQt5.QtCore import pyqtSlot, Qt, QSettings, QSize
 from webhook import httpListener
 from MatchHistory import MatchHistory
 from UIListener import UIListener
-#kryz   = Kryzel block start
-#kryzne = Kryzel ninja edit
+# kryz   = Kryzel block start
+# kryzne = Kryzel ninja edit
+
 
 class MainWindow(QWidget):
     notes = {}
@@ -45,25 +46,28 @@ class MainWindow(QWidget):
 
         col1 = QVBoxLayout()
         col1.setAlignment(Qt.AlignTop)
-        #kryzne
-        self.whoseNote=QLabel("No Player Selected")
+        # kryzne
+        self.whoseNote = QLabel("No Player Selected")
         col1.addWidget(self.whoseNote)
 
         self.noteText = QTextEdit()
         self.noteText.textChanged.connect(
             lambda: self.saveNoteText(self.noteText.document().toPlainText()))
-        
+
         col1.addWidget(self.noteText)
-        #kryz
-        self.saveNoteButton=QPushButton("Save And Close Note")
+        # kryz
+        self.saveNoteButton = QPushButton("Save And Close Note")
         self.saveNoteButton.clicked.connect(
             lambda: self.saveNoteText(self.noteText.document().toPlainText()))
-        self.saveNoteButton.clicked.connect(self.loadMostRecentPlayer)
+        self.saveNoteButton.clicked.connect(
+            partial(self.loadFromUsername, ""))
         col1.addWidget(self.saveNoteButton)
-        
-        self.mostRecentPlayerButton=QPushButton("Show Most Recent Player")
-        self.mostRecentPlayerButton.clicked.connect(self.loadMostRecentPlayer)
-        col1.addWidget(self.mostRecentPlayerButton)
+
+     #   self.mostRecentPlayerButton = QPushButton("Show Most Recent Player")
+     #   self.mostRecentPlayerButton.clicked.connect(
+       #     partial(self.loadFromUsername, self.mh.recents[-1]['opponent'] if (len(self.mh.recents) > 0)
+       #             else ""))
+       # col1.addWidget(self.mostRecentPlayerButton)
 
         col1.addWidget(QLabel("Font Size"))
         self.fontSize = QSlider(Qt.Horizontal)
@@ -208,15 +212,15 @@ class MainWindow(QWidget):
 
         self.gameLabel.setText("")
         results = []
-        #kryzne:added / not in name
+        # kryzne:added / not in name
         #       changed name.lower() not in results to name not in results
         for name in self.notes.keys():
-            if (query in name.lower()) and ("/" not in name.lower()) and (name not in results):
+            if (name not in results) and (query in name.lower()) and ("/" not in name.lower()):
                 results.append(name)
-            if (query in self.notes[name].lower()) and ("/" not in name.lower()) and (name not in results):
+            if (name not in results) and (query in self.notes[name].lower()) and ("/" not in name.lower()):
                 results.append(name)
         for name in self.mh.matches.keys():
-            if (query in name.lower()) and  ("/" not in name.lower()) and(name not in results):
+            if (name not in results) and (query in name.lower()) and ("/" not in name.lower()):
                 results.append(name)
 
         if len(results) > 0:
@@ -233,7 +237,10 @@ class MainWindow(QWidget):
     def loadFromUsername(self, username):
         if username in self.notes:
             self.OPName = username
-            self.whoseNote.setText(username) #kryzne
+            if username == "":
+                self.whoseNote.setText("No Player Selected")
+            else:
+                self.whoseNote.setText(username)  # kryzne
             self.noteText.setText(self.notes[username])
             if (username in self.mh.matches) == False:
                 self.historyLabel.setText("")
@@ -291,14 +298,6 @@ class MainWindow(QWidget):
             winrate = str(int((wins/games) * 100))
             self.recentMatchesText.setText("Recent Matches - " +
                                            str(wins) + ":" + str(games - wins) + " (" + winrate + "%)")
-            
-    #kryz
-    def loadMostRecentPlayer(self):
-        if (len (self.mh.recents)==0):
-            self.whoseNote.setText("No Player In Recents")
-        else:
-            m=self.mh.recents[-1] 
-            partial(self.loadFromUsername,m ['opponent'])
 
     def setFontSize(self):
         font = QFont()
