@@ -15,3 +15,5 @@ Your notes and match history are stored in `notes.json` and `matches.json` respe
 `pip install -r requirements.txt`
 
 `pyinstaller main.py --noconsole --name sc2notes`
+
+use pyqt5-tools if pyqt doesnt work(it will work without PyQt5 being installed)

@@ -4,3 +4,5 @@
 /__pycache__
 matches.json
 notes.json
+/build
+/sc2notes.spec
